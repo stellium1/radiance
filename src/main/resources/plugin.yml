@@ -1,0 +1,11 @@
+name: radiance
+version: '${version}'
+main: org.qbuild.radiance.Main
+api-version: '1.20'
+authors: [build]
+
+commands:
+  sendpacket:
+    description: test
+  maxplayer:
+    description: a
