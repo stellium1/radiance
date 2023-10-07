@@ -1,4 +1,8 @@
 # Project exclude paths
 /.gradle/
 /build/
-/build/classes/java/main/
+/build/classes/java/main/build.gradle
+build.gradle
+/node_modules/
+/.idea/discord.xml
+/.idea/

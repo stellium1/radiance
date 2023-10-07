@@ -1,52 +1,92 @@
 package org.qbuild.radiance;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolConfig;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.ViaAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.GameRule;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
+import org.qbuild.radiance.command.*;
+import org.qbuild.radiance.event.*;
+import org.qbuild.radiance.manager.ConfigManager;
+import org.qbuild.radiance.monitor.CommandBlockMonitor;
+import org.qbuild.radiance.monitor.CommandMonitor;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 
 public class Main extends JavaPlugin {
     private static Main instance = null;
+    public Map<UUID, Boolean> commandWatchdog = Collections.synchronizedMap(new HashMap<>());
+    private static ProtocolManager ptlManager = ProtocolLibrary.getProtocolManager();
+    public File configFile = new File("plugins/radiance/variables.yml");
+
     @Override
     public void onEnable() {
         instance = this;
-        ViaAPI viaAPI = Via.getAPI();
-        Bukkit.getPluginManager().registerEvents(new EventManager(), this);
-        Bukkit.getPluginManager().registerEvents(new CommandSpy(), this);
-    }
+        CommandBlockMonitor.packetListening();
 
-    public Main getInstance() {
-        return instance;
+        setGameRule();
+        registeringCommand();
+        registeringEvent();
+
+        ConfigManager cfgManager = new ConfigManager();
+
+        try {
+            cfgManager.initConfigFile();
+            cfgManager.configToHashMap();
+        } catch (IOException | InvalidConfigurationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (command.getName().equalsIgnoreCase("sendpacket")) {
-            ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-            PacketContainer packet = manager.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
-            packet.getGameStateIDs().write(0, 5);
-            packet.getFloat().write(0, 0F);
-
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                manager.sendServerPacket(p, packet);
-            }
-            return true;
+    public void onDisable() {
+        ConfigManager cfgManager = new ConfigManager();
+        try {
+            cfgManager.saveConfigFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        else if(command.getName().equalsIgnoreCase("maxplayer")) {
-            Bukkit.getServer().setMaxPlayers(500);
-        }
-        return false;
     }
+
+    public static Main getInstance() {
+        return instance;
+    }
+
+    public static ProtocolManager getProtocolManger() {
+        return ptlManager;
+    }
+
+    public void registeringCommand() {
+        this.getCommand("maxplayer").setExecutor(new MaxPlayer());
+        this.getCommand("phonecheck").setExecutor(new PhoneCheck());
+        this.getCommand("profilecheck").setExecutor(new ProfileCheck());
+        this.getCommand("watchdog").setExecutor(new WatchDog());
+        this.getCommand("namemc").setExecutor(new NameMc());
+        this.getCommand("getip").setExecutor(new GetIp());
+        this.getCommand("serverstatus").setExecutor(new ServerStatus());
+
+    }
+
+    public void registeringEvent() {
+        Bukkit.getPluginManager().registerEvents(new OnChat(), this);
+        Bukkit.getPluginManager().registerEvents(new OnJoin(), this);
+        Bukkit.getPluginManager().registerEvents(new OnQuit(), this);
+        Bukkit.getPluginManager().registerEvents(new CommandMonitor(), this);
+        Bukkit.getPluginManager().registerEvents(new ChatCraftBlocker(), this);
+        Bukkit.getPluginManager().registerEvents(new CommandBlocker(), this);
+    }
+
+    public void setGameRule() {
+        Bukkit.getServer().getWorld("world").setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+        Bukkit.getServer().getWorld("world").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+    }
+
 }
+

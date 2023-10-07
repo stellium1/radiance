@@ -3,9 +3,20 @@ version: '${version}'
 main: org.qbuild.radiance.Main
 api-version: '1.20'
 authors: [build]
+depend: [ProtocolLib, ViaVersion]
 
 commands:
-  sendpacket:
-    description: test
+  watchdog:
+    description: 커맨드 감시를 끄고 켜요.
   maxplayer:
-    description: a
+    description: 최대 플레이어 숫자를 바꿔요.
+  profilecheck:
+    description: 유저의 클라이언트 설정 일부를 보여줘요.
+  phonecheck:
+    description: 폰으로 접속한 유저들을 감지해요.
+  namemc:
+    description: 유저의 닉네임 기록을 보여줘요.
+  getip:
+    description: 유저의 아이피를 보여줘요.
+  serverstatus:
+    description: 다른 서버의 상태를 봐요.
