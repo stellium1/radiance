@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import static org.qbuild.radiance.manager.FunctionManager.isOwner;
 
 public class CommandBlocker implements Listener {
-    String regex = ".*\\b(stopsound|playsound|stop|reload|restart)\\b.*";
+    String regex = ".*\\b(stopsound|playsound|stop|reload|restart|plugman)\\b.*";
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommand(PlayerCommandPreprocessEvent e) {

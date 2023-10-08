@@ -2,8 +2,8 @@ name: radiance
 version: '${version}'
 main: org.qbuild.radiance.Main
 api-version: '1.20'
-authors: [build]
-depend: [ProtocolLib, ViaVersion]
+authors: [ build ]
+depend: [ ProtocolLib, ViaVersion ]
 
 commands:
   watchdog:
@@ -20,3 +20,9 @@ commands:
     description: 유저의 아이피를 보여줘요.
   serverstatus:
     description: 다른 서버의 상태를 봐요.
+  setmotd:
+    description: 서버의 motd를 바꿔요.
+  randomcolor:
+    description: test
+  clearchat:
+    description: 채팅 밀기

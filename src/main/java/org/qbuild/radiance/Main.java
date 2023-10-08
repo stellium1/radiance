@@ -71,6 +71,10 @@ public class Main extends JavaPlugin {
         this.getCommand("namemc").setExecutor(new NameMc());
         this.getCommand("getip").setExecutor(new GetIp());
         this.getCommand("serverstatus").setExecutor(new ServerStatus());
+        this.getCommand("setmotd").setExecutor(new SetMotd());
+        this.getCommand("randomcolor").setExecutor(new RandomColor());
+        this.getCommand("clearchat").setExecutor(new ClearChat());
+
 
     }
 
